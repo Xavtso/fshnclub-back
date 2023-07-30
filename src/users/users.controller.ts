@@ -36,4 +36,14 @@ constructor(private userService: UsersService){}
     declineCandidate(@Body() dto: createUserDto) {
         return this.declineCandidate(dto)
     }
+
+    @Post('/role')
+    giveTheRole(@Body() dto: createUserDto) {
+        return this.userService.giveRoleToUser(dto)
+    }
+
+    @Post('/find/roles')
+    getUsersByRole(@Body() dto: createUserDto) {
+        return this.userService.findUsersByRole(dto.role)
+    }
 }

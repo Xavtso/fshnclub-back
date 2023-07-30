@@ -6,6 +6,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+import { UsersVouchers } from 'src/vouchers/userVouchers.model';
 
 
 interface UserCreationsAttrs {
@@ -42,14 +43,13 @@ export class User extends Model<User, UserCreationsAttrs> {
   })
   birthDate: Date;
 
-
   @Column({
     type: DataType.STRING,
-      allowNull: false,
-    defaultValue: 'customer'
+    allowNull: false,
+    defaultValue: 'customer',
   })
   role: string;
 
-  
-
+  @HasMany(() => UsersVouchers)
+  vouchers: UsersVouchers[];
 }

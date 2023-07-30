@@ -8,6 +8,12 @@ import { Order } from './users/order.model';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { Vouchers } from './vouchers/voucher.model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersVouchers } from './vouchers/userVouchers.model';
+import { EventsModule } from './events/events.module';
+import { Events } from './events/events.model';
+import { AuthModule } from './auth/auth.module';
+import { UsersService } from './users/users.service';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   controllers: [AppController],
@@ -28,11 +34,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         password: process.env.PASSWORD,
         database: process.env.DB,
         autoLoadModels: true,
-        models: [User, Order, Vouchers],
+        models: [User, Order, Vouchers,UsersVouchers,Events],
       }),
     }),
     UsersModule,
     VouchersModule,
+    EventsModule,
+    AuthModule,
   ],
+  exports:[AuthModule]
 })
 export class AppModule {}

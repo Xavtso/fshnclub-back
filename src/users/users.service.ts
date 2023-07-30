@@ -55,6 +55,18 @@ export class UsersService {
         return await this.userModel.findAll();
     }
 
+    async findUserByPhoneNumber(dto: createUserDto) {
+        const user = await this.userModel.findOne({ where: { phoneNumber: dto.phone } });
+        return user;
+    }
 
+    async giveRoleToUser(dto: createUserDto) {
+        const candidate = await this.userModel.update({ role: dto.role }, { where: { id: dto.id } })
+        return `Role Changed` 
+    }
 
+    async findUsersByRole(role: string) {
+        const users = await this.userModel.findAll({ where: { role } })
+        return users;
+    }
 }

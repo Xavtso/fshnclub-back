@@ -1,22 +1,20 @@
 import {
-  HasOne,
   Column,
   DataType,
-  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
-import { UsersVouchers } from './userVouchers.model';
 
-interface VoucherCreationsAttrs {
-    title: string;
-    start_date: Date;
-    expire_date: Date;
-    image: string;
+
+interface EventsCreationsAttrs {
+  title: string;
+  start_date: Date;
+  expire_date: Date;
+  image: string;
 }
 
-@Table({ tableName: 'vouchers' })
-export class Vouchers extends Model<Vouchers, VoucherCreationsAttrs> {
+@Table({ tableName: 'events' })
+export class Events extends Model<Events, EventsCreationsAttrs> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -49,7 +47,6 @@ export class Vouchers extends Model<Vouchers, VoucherCreationsAttrs> {
     allowNull: true,
   })
   image: string;
-  
-  @HasMany(() => UsersVouchers)
-  users: UsersVouchers[];
+
+
 }
