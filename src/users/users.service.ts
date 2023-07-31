@@ -18,6 +18,11 @@ export class UsersService {
     }
 
     async sendToOrder(userDto: createUserDto) {
+    //     const candidate = await this.orderModel.findOne({ where: { phoneNumber: userDto.phone } });
+    //     if (candidate) {
+    //        return 'You already in line!'
+    //    } 
+
         await this.orderModel.create(userDto);
         return 'Thanks. Wait for admin approve now !)'
     }
@@ -68,5 +73,12 @@ export class UsersService {
     async findUsersByRole(role: string) {
         const users = await this.userModel.findAll({ where: { role } })
         return users;
+    }
+
+    async checkCandidate(dto: createUserDto) {
+        const candidate = this.orderModel.findOne({
+          where: { phoneNumber: dto.phone },
+        });
+        return candidate
     }
 }

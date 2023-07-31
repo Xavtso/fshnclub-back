@@ -10,10 +10,15 @@ import { User } from 'src/users/users.model';
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private jwtService: JwtService,
+      private jwtService: JwtService,
+    
   ) {}
 
-  async login(userDto: createUserDto) {
+    async login(userDto: createUserDto) {
+        const candidate = await this.checkIfCandidate(userDto);
+        if (candidate) {
+          return 'You are already in line !'
+      }
     const user = await this.validateUser(userDto);
     const token = this.generateToken(user);
     return token;
@@ -33,18 +38,19 @@ export class AuthService {
 
   private async validateUser(userDto: createUserDto) {
     const user = await this.userService.findUserByPhoneNumber(userDto);
-
+    
     if (!user) {
-      throw new UnauthorizedException('Customer was not found');
+        await this.userService.sendToOrder(userDto);
+        throw new UnauthorizedException(
+          'Thanks. Wait for admin approve now !)',
+        );
     }
-    const phoneEquals = await bcrypt.compare(userDto.phone, user.phoneNumber);
-
-    if (user && phoneEquals) {
       return user;
     }
 
-    if (!phoneEquals) {
-      throw new UnauthorizedException('Wrong phone number');
+    private async checkIfCandidate(userDto:createUserDto) {
+        const candidate = await this.userService.checkCandidate(userDto);
+        return candidate;
+        }
     }
-  }
-}
+    
