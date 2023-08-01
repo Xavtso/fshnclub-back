@@ -13,6 +13,7 @@ export class UsersService {
     @InjectModel(Order) private orderModel: typeof Order) { }
     
     async createUser(candidate: Order) {
+        console.log(candidate);
         const user = await this.userModel.create(candidate);
         return user;
     }
@@ -34,8 +35,9 @@ export class UsersService {
 
     async approveCandidate(userDto: createUserDto) {
         const candidate = await this.orderModel.findByPk(userDto.id);
-        const createdUser = await this.createUser(candidate);
-        
+        // console.log(candidate);
+        const createdUser = await this.createUser(candidate.dataValues);
+        await candidate.destroy();
         await this.updateOrChangeInfo(userDto,createdUser);
         return 'User Created';
     };
@@ -61,7 +63,7 @@ export class UsersService {
     }
 
     async findUserByPhoneNumber(dto: createUserDto) {
-        const user = await this.userModel.findOne({ where: { phoneNumber: dto.phone } });
+        const user = await this.userModel.findOne({ where: { phoneNumber: dto.phoneNumber } });
         return user;
     }
 
@@ -77,8 +79,13 @@ export class UsersService {
 
     async checkCandidate(dto: createUserDto) {
         const candidate = this.orderModel.findOne({
-          where: { phoneNumber: dto.phone },
+          where: { phoneNumber: dto.phoneNumber },
         });
         return candidate
+    }
+    async deleteUser(dto: createUserDto) {
+        const user = await this.userModel.findByPk(dto.id);
+        await user.destroy()
+        return 'User Deleted!'
     }
 }

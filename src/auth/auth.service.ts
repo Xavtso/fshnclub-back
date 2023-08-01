@@ -17,7 +17,7 @@ export class AuthService {
     async login(userDto: createUserDto) {
         const candidate = await this.checkIfCandidate(userDto);
         if (candidate) {
-          return 'You are already in line !'
+          throw new UnauthorizedException('You are already in line !');
       }
     const user = await this.validateUser(userDto);
     const token = this.generateToken(user);

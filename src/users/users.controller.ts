@@ -34,7 +34,7 @@ constructor(private userService: UsersService){}
 
     @Post('/decline')
     declineCandidate(@Body() dto: createUserDto) {
-        return this.declineCandidate(dto)
+        return this.userService.declineCandidate(dto)
     }
 
     @Post('/role')
@@ -46,4 +46,11 @@ constructor(private userService: UsersService){}
     getUsersByRole(@Body() dto: createUserDto) {
         return this.userService.findUsersByRole(dto.role)
     }
+
+    @Post('/delete')
+    deleteUser(@Body() dto: createUserDto) {
+        return this.userService.deleteUser(dto)
+    }
+
+
 }
