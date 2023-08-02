@@ -78,7 +78,7 @@ export class VouchersService {
   }
 
   async showAllVouchers() {
-    const usersVouchers = await this.uservouchersModel.findAll();
+    const usersVouchers = await this.vouchersModel.findAll();
     return usersVouchers;
   }
 
