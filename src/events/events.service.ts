@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Events } from './events.model';
 import { createEventDto } from './dto/createEvent.dto';
 import { Op } from 'sequelize';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class EventsService {
@@ -18,10 +19,9 @@ export class EventsService {
     await event.destroy();
     return 'Event deleted';
   }
-
-  async deleteExpiredVouchers() {
+  @Cron(CronExpression.EVERY_6_HOURS)
+  async deleteExpiredEvents() {
     const currentDate = new Date();
-
 
     const expiredEvents = await this.eventsModel.findAll({
       where: {
@@ -31,14 +31,13 @@ export class EventsService {
 
     for (const event of expiredEvents) {
       await this.eventsModel.destroy({ where: { id: event.id } });
-      
     }
 
     return 'Events Successfull Deleted';
   }
-    
-    async showEvents() {
-        const events = await this.eventsModel.findAll();
-        return events
-   } 
+
+  async showEvents() {
+    const events = await this.eventsModel.findAll();
+    return events;
+  }
 }

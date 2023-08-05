@@ -36,6 +36,12 @@ export class UsersVouchers extends Model<UsersVouchers> {
     allowNull: false,
   })
   userId: number;
+  
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  title: string;
 
   @ForeignKey(() => Vouchers)
   @Column({

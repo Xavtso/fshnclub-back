@@ -14,11 +14,13 @@ import { Events } from './events/events.model';
 import { AuthModule } from './auth/auth.module';
 import { UsersService } from './users/users.service';
 import { AuthService } from './auth/auth.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   controllers: [AppController],
   providers: [AppService],
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),

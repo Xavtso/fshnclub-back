@@ -4,6 +4,7 @@ import { Vouchers } from './voucher.model';
 import { createVoucherDto } from './dto/createVoucherDto';
 import { UsersVouchers } from './userVouchers.model';
 import { Op } from 'sequelize';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class VouchersService {
@@ -19,13 +20,14 @@ export class VouchersService {
     for (const userId of dto.userIds) {
       await this.uservouchersModel.create({
         userId,
+        title:dto.title,
         voucherId: voucher.id,
         ifUsed: false,
       });
     }
     return 'Vouchers Created Successfull';
   }
-
+@Cron(CronExpression.EVERY_6_HOURS)
   async deleteExpiredVouchers() {
     const currentDate = new Date();
 
