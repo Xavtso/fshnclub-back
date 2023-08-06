@@ -71,12 +71,12 @@ export class VouchersService {
     // Видалити ваучери та їхні прив'язки до користувачів
     for (const voucher of vouchers) {
       await this.uservouchersModel.destroy({
-        where: { voucherId: voucher.id },
+        where: { voucherId: dto.id },
       });
-      await this.vouchersModel.destroy({ where: { id: dto.id } });
     }
+    await this.vouchersModel.destroy({ where: { id: dto.id } });
 
-    return 'Vouchers Successfull Deleted';
+    return 'Vouchers Successfull Deleted'; 
   }
 
   async showAllVouchers() {
