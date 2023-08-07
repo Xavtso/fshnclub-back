@@ -39,12 +39,14 @@ export class VouchersService {
     });
 
     // Видалити ваучери та їхні прив'язки до користувачів
+  if (expiredVouchers && expiredVouchers.length > 0) {
     for (const voucher of expiredVouchers) {
       await this.uservouchersModel.destroy({
         where: { voucherId: voucher.id },
       });
       await voucher.destroy();
     }
+  }
 
     return 'Vouchers Successfull Deleted';
   }
@@ -86,7 +88,7 @@ export class VouchersService {
 
   async showCustomerVouchers(id: number) {
     const userVouchers = await this.uservouchersModel.findAll({
-      where: { id },
+      where: {userId: id },
     });
     return userVouchers;
   }

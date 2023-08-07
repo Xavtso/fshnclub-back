@@ -29,8 +29,10 @@ export class EventsService {
       },
     });
 
-    for (const event of expiredEvents) {
-      await this.eventsModel.destroy({ where: { id: event.id } });
+    if(expiredEvents && expiredEvents.length > 0){ 
+      for (const event of expiredEvents) {
+        await this.eventsModel.destroy({ where: { id: event.id } });
+      }
     }
 
     return 'Events Successfull Deleted';
