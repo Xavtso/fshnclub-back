@@ -1,56 +1,70 @@
-import { Controller,Get,Post,Body,Param } from '@nestjs/common';
+import { Controller,Get,Post,Body,Param, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { createUserDto } from './dto/createUser.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles-auth.decorator';
+import { RolesGuard } from 'src/auth/roles-auth.guard';
 
 @Controller('users')
 export class UsersController {
+    constructor(private userService: UsersService) { }
+    
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Get('/')
+  getUsers() {
+    return this.userService.showUsers();
+  }
 
-constructor(private userService: UsersService){}
+  @Post('/register')
+  sendToOrder(@Body() dto: createUserDto) {
+    return this.userService.sendToOrder(dto);
+  }
 
-    @Get('/')
-    getUsers() {
-        return this.userService.showUsers();
-    };
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Get('/candidates')
+  getCandidates() {
+    return this.userService.showCandidates();
+  }
 
-    @Post('/register')
-    sendToOrder(@Body() dto: createUserDto) {
-        return this.userService.sendToOrder(dto);
-    }
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Post('/approve')
+  approveCandidate(@Body() dto: createUserDto) {
+    return this.userService.approveCandidate(dto);
+  }
 
-    @Get('/candidates')
-    getCandidates() {
-        return this.userService.showCandidates();
-    }
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Post('/edit')
+  editUserInfo(@Body() dto: createUserDto) {
+    return this.userService.updateOrChangeInfo(dto);
+  }
 
-    @Post('/approve')
-    approveCandidate(@Body() dto:createUserDto) {
-        return this.userService.approveCandidate(dto);
-    }
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Post('/decline')
+  declineCandidate(@Body() dto: createUserDto) {
+    return this.userService.declineCandidate(dto);
+  }
 
-    @Post('/edit')
-    editUserInfo(@Body() dto: createUserDto) {
-        return this.userService.updateOrChangeInfo(dto);
-    }
+  @Post('/role')
+  giveTheRole(@Body() dto: createUserDto) {
+    return this.userService.giveRoleToUser(dto);
+  }
 
-    @Post('/decline')
-    declineCandidate(@Body() dto: createUserDto) {
-        return this.userService.declineCandidate(dto)
-    }
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Post('/find/roles')
+  getUsersByRole(@Body() dto: createUserDto) {
+    return this.userService.findUsersByRole(dto.role);
+  }
 
-    @Post('/role')
-    giveTheRole(@Body() dto: createUserDto) {
-        return this.userService.giveRoleToUser(dto)
-    }
-
-    @Post('/find/roles')
-    getUsersByRole(@Body() dto: createUserDto) {
-        return this.userService.findUsersByRole(dto.role)
-    }
-
-    @Post('/delete')
-    deleteUser(@Body() dto: createUserDto) {
-        return this.userService.deleteUser(dto)
-    }
-
-
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Post('/delete')
+  deleteUser(@Body() dto: createUserDto) {
+    return this.userService.deleteUser(dto);
+  }
 }
