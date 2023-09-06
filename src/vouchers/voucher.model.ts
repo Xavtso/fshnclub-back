@@ -12,7 +12,7 @@ interface VoucherCreationsAttrs {
     title: string;
     start_date: Date;
     expire_date: Date;
-    image: string;
+    image: Buffer;
 }
 
 @Table({ tableName: 'vouchers' })
@@ -45,10 +45,10 @@ export class Vouchers extends Model<Vouchers, VoucherCreationsAttrs> {
   expire_date: Date;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.BLOB,
     allowNull: true,
   })
-  image: string;
+  image: Buffer;
   
   @HasMany(() => UsersVouchers)
   users: UsersVouchers[];

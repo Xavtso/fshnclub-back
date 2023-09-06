@@ -12,9 +12,8 @@ import { UsersVouchers } from './vouchers/userVouchers.model';
 import { EventsModule } from './events/events.module';
 import { Events } from './events/events.model';
 import { AuthModule } from './auth/auth.module';
-import { UsersService } from './users/users.service';
-import { AuthService } from './auth/auth.service';
 import { ScheduleModule } from '@nestjs/schedule';
+
 
 @Module({
   controllers: [AppController],
@@ -24,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
+   
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

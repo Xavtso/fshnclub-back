@@ -13,9 +13,9 @@ export class VouchersService {
     @InjectModel(UsersVouchers) private uservouchersModel: typeof UsersVouchers,
   ) {}
 
-  async createVoucherAndAssignToUsers(dto: createVoucherDto) {
-    const voucher = await this.vouchersModel.create(dto);
-
+  async createVoucherAndAssignToUsers(dto: createVoucherDto, buffer: Buffer) {
+    const voucher = await this.vouchersModel.create({ ...dto, image:buffer });
+    console.log(voucher);
     // Прив'язати ваучер до вказаних користувачів
     for (const userId of dto.userIds) {
       await this.uservouchersModel.create({
@@ -23,9 +23,10 @@ export class VouchersService {
         title:dto.title,
         voucherId: voucher.id,
         ifUsed: false,
+        image: voucher.image
       });
     }
-    return 'Vouchers Created Successfull';
+    return 'Vouchers Created Successfull'; 
   }
 @Cron(CronExpression.EVERY_6_HOURS)
   async deleteExpiredVouchers() {
@@ -92,4 +93,8 @@ export class VouchersService {
     });
     return userVouchers;
   }
+
+
+  
+
 }

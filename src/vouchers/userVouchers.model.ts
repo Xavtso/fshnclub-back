@@ -56,6 +56,13 @@ export class UsersVouchers extends Model<UsersVouchers> {
     defaultValue: false,
   })
   ifUsed: boolean;
+  
+  @Column({
+    type: DataType.BLOB,
+    allowNull: true,
+  })
+  image: Buffer;
+
 
   // Зв'язок багато до одного між UsersVouchers та User
   @BelongsTo(() => User)

@@ -4,6 +4,6 @@ export class createVoucherDto {
   title: string;
   start_date: Date;
   expire_date: Date;
-    image: string;
+    image: Buffer;
     userIds:number[]
 }

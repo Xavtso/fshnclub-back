@@ -3,89 +3,112 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { createUserDto } from './dto/createUser.dto';
 import { Order } from './order.model';
-
-
+import { TwilioService } from 'nestjs-twilio/dist/module';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectModel(User) private userModel: typeof User,
+    @InjectModel(Order) private orderModel: typeof Order,
+    private readonly twilioService: TwilioService,
+  ) {}
 
-    constructor(@InjectModel(User) private userModel: typeof User,
-    @InjectModel(Order) private orderModel: typeof Order) { }
-    
-    async createUser(candidate: Order) {
-        console.log(candidate);
-        const user = await this.userModel.create(candidate);
-        return user;
-    }
+  async createUser(candidate: Order) {
+    console.log(candidate);
+    const user = await this.userModel.create(candidate);
+    this.sendSMS(user);
+    return user;
+  }
 
-    async sendToOrder(userDto: createUserDto) {
+  async sendSMS(user:User) {
+    return this.twilioService.client.messages.create({
+      body: `
+        Hello! \n 
+    We are pleased to inform you that your application for membership in our club has been accepted.
+    You can now log in to your account. \n 
+       
+    Login:  ${user.name} \n
+    Password: ${user.phoneNumber} \n
+
+    Best regards! You FSHN Club
+            `,
+      from: '+12515807858',
+      to: '+380934627774',
+    });
+  }
+  async sendToOrder(userDto: createUserDto) {
     //     const candidate = await this.orderModel.findOne({ where: { phoneNumber: userDto.phone } });
     //     if (candidate) {
     //        return 'You already in line!'
-    //    } 
+    //    }
 
-        await this.orderModel.create(userDto);
-        return 'Thanks. Wait for admin approve now !)'
+    await this.orderModel.create(userDto);
+    return 'Thanks. Wait for admin approve now !)';
+  }
+
+  async showCandidates() {
+    const candidates = this.orderModel.findAll();
+    return candidates;
+  }
+
+  async approveCandidate(userDto: createUserDto) {
+    const candidate = await this.orderModel.findByPk(userDto.id);
+    // console.log(candidate);
+    const createdUser = await this.createUser(candidate.dataValues);
+    await candidate.destroy();
+    await this.updateOrChangeInfo(userDto, createdUser);
+    return 'User Created';
+  }
+
+  async updateOrChangeInfo(userDto: createUserDto, user?: User) {
+    if (user) {
+      await user.update({ ...userDto });
     }
+    const customer = await this.userModel.findByPk(userDto.id);
+    await customer.update({ ...userDto });
 
-    async showCandidates() {
-        const candidates = this.orderModel.findAll();
-        return candidates;
-    }
+    return 'User Info Updated';
+  }
 
-    async approveCandidate(userDto: createUserDto) {
-        const candidate = await this.orderModel.findByPk(userDto.id);
-        // console.log(candidate);
-        const createdUser = await this.createUser(candidate.dataValues);
-        await candidate.destroy();
-        await this.updateOrChangeInfo(userDto,createdUser);
-        return 'User Created';
-    };
+  async declineCandidate(userDto: createUserDto) {
+    const candidate = await this.orderModel.findByPk(userDto.id);
+    await candidate.destroy();
+    return 'User was deleted';
+  }
 
-    async updateOrChangeInfo(userDto:createUserDto, user?: User,) {
-        if (user) {
-            await user.update({ ...userDto });
-        }
-        const customer = await this.userModel.findByPk(userDto.id);
-        await customer.update({...userDto})
+  async showUsers() {
+    return await this.userModel.findAll();
+  }
 
-        return 'User Info Updated';
-    }
+  async findUserByPhoneNumber(dto: createUserDto) {
+    const user = await this.userModel.findOne({
+      where: { phoneNumber: dto.phoneNumber },
+    });
+    return user;
+  }
 
-    async declineCandidate(userDto: createUserDto) {
-        const candidate = await this.orderModel.findByPk(userDto.id);
-        await candidate.destroy();
-        return 'User was deleted'
-    }
+  async giveRoleToUser(dto: createUserDto) {
+    const candidate = await this.userModel.update(
+      { role: dto.role },
+      { where: { id: dto.id } },
+    );
+    return `Role Changed`;
+  }
 
-    async showUsers() {
-        return await this.userModel.findAll();
-    }
+  async findUsersByRole(role: string) {
+    const users = await this.userModel.findAll({ where: { role } });
+    return users;
+  }
 
-    async findUserByPhoneNumber(dto: createUserDto) {
-        const user = await this.userModel.findOne({ where: { phoneNumber: dto.phoneNumber } });
-        return user;
-    }
-
-    async giveRoleToUser(dto: createUserDto) {
-        const candidate = await this.userModel.update({ role: dto.role }, { where: { id: dto.id } })
-        return `Role Changed` 
-    }
-
-    async findUsersByRole(role: string) {
-        const users = await this.userModel.findAll({ where: { role } })
-        return users;
-    }
-
-    async checkCandidate(dto: createUserDto) {
-        const candidate = this.orderModel.findOne({
-          where: { phoneNumber: dto.phoneNumber },
-        });
-        return candidate
-    }
-    async deleteUser(dto: createUserDto) {
-        const user = await this.userModel.findByPk(dto.id);
-        await user.destroy()
-        return 'User Deleted!'
-    }
+  async checkCandidate(dto: createUserDto) {
+    const candidate = this.orderModel.findOne({
+      where: { phoneNumber: dto.phoneNumber },
+    });
+    return candidate;
+  }
+  async deleteUser(dto: createUserDto) {
+    const user = await this.userModel.findByPk(dto.id);
+    await user.destroy();
+    return 'User Deleted!';
+  }
 }
