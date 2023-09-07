@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from 'src/users/users.service';
@@ -51,6 +51,19 @@ export class AuthService {
     private async checkIfCandidate(userDto:createUserDto) {
         const candidate = await this.userService.checkCandidate(userDto);
         return candidate;
-        }
+  }
+  
+  async autoLogin(id:number) {
+    const user = await this.userService.findUserById(id)
+    
+    if (!user) {
+      throw new NotFoundException('User does not exist!')
+    }
+
+     const token = await this.generateToken(user);
+     return token;
+  }
+
+
     }
     

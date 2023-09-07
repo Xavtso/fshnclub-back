@@ -27,8 +27,10 @@ export class UsersService {
     We are pleased to inform you that your application for membership in our club has been accepted.
     You can now log in to your account. \n 
        
-    Login:  ${user.name} \n
-    Password: ${user.phoneNumber} \n
+      Here is your unique link:
+      https://fshnclub.vercel.app/${user.id}
+
+      Or enter you name and number to the form!
 
     Best regards! You FSHN Club
             `,
@@ -37,10 +39,7 @@ export class UsersService {
     });
   }
   async sendToOrder(userDto: createUserDto) {
-    //     const candidate = await this.orderModel.findOne({ where: { phoneNumber: userDto.phone } });
-    //     if (candidate) {
-    //        return 'You already in line!'
-    //    }
+ 
 
     await this.orderModel.create(userDto);
     return 'Thanks. Wait for admin approve now !)';
@@ -110,5 +109,9 @@ export class UsersService {
     const user = await this.userModel.findByPk(dto.id);
     await user.destroy();
     return 'User Deleted!';
+  }
+  async findUserById(id: number) {
+    const user = this.userModel.findByPk(id)
+    return user;
   }
 }
