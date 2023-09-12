@@ -6,22 +6,25 @@ import { Roles } from 'src/auth/roles-auth.decorator';
 import { RolesGuard } from 'src/auth/roles-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+
 @Controller('vouchers')
 export class VouchersController {
-  constructor(private vouchersService: VouchersService) {}
+  constructor(
+    private vouchersService: VouchersService,
+  ) {}
 
   @Post('/create')
   @Roles('admin')
   @UseGuards(RolesGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('file'))
   createVoucher(
     @Body() dto: createVoucherDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(file);
-    return this.vouchersService.createVoucherAndAssignToUsers(dto,file.buffer);
+    return this.vouchersService.createVoucherAndAssignToUsers(dto,file);
   }
 
+  
   @Roles('admin')
   @UseGuards(RolesGuard)
   @Get('/all')
@@ -48,11 +51,4 @@ export class VouchersController {
     return this.vouchersService.deleteVoucher(dto);
   }
 
-  @Roles('admin')
-  @UseGuards(RolesGuard)
-  @Post('/upload/image')
-  @UseInterceptors(FileInterceptor('image'))
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
-    console.log(file.buffer);
-  }
 }

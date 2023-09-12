@@ -8,14 +8,16 @@ import { Order } from 'src/users/order.model';
 import { UsersVouchers } from 'src/vouchers/userVouchers.model';
 import { AuthModule } from 'src/auth/auth.module';
 import { TwilioModule,TwilioClient } from 'nestjs-twilio';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService],
   imports: [
+    ConfigModule.forRoot(),
     TwilioModule.forRoot({
-      accountSid: 'AC340a08ff28e726ac2494dd2df8ca0528',
-      authToken: 'f9ee49090b78d09627f0ea47d1a2663f',
+      accountSid: process.env.TWILIO_SID,
+      authToken: process.env.TWILIO_TOKEN,
     }),
 
     SequelizeModule.forFeature([User, Order, UsersVouchers]),

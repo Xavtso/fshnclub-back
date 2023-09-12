@@ -57,11 +57,12 @@ export class UsersVouchers extends Model<UsersVouchers> {
   })
   ifUsed: boolean;
   
+  @ForeignKey(() => Vouchers)
   @Column({
-    type: DataType.BLOB,
+    type: DataType.STRING,
     allowNull: true,
   })
-  image: Buffer;
+  image: string;
 
 
   // Зв'язок багато до одного між UsersVouchers та User

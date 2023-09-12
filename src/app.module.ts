@@ -13,6 +13,7 @@ import { EventsModule } from './events/events.module';
 import { Events } from './events/events.model';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: '.env',
     }),
    
@@ -43,6 +45,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     VouchersModule,
     EventsModule,
     AuthModule,
+    CloudinaryModule,
   ],
   exports:[AuthModule]
 })

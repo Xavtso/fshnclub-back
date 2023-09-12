@@ -5,17 +5,22 @@ import { createVoucherDto } from './dto/createVoucherDto';
 import { UsersVouchers } from './userVouchers.model';
 import { Op } from 'sequelize';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class VouchersService {
   constructor(
     @InjectModel(Vouchers) private vouchersModel: typeof Vouchers,
     @InjectModel(UsersVouchers) private uservouchersModel: typeof UsersVouchers,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async createVoucherAndAssignToUsers(dto: createVoucherDto, buffer: Buffer) {
-    const voucher = await this.vouchersModel.create({ ...dto, image:buffer });
-    console.log(voucher);
+  async createVoucherAndAssignToUsers(dto: createVoucherDto, file: Express.Multer.File) {
+    const voucher = await this.vouchersModel.create(dto);
+    const imgFile = await  this.cloudinaryService.uploadFile(file);
+    const imgUrl = imgFile.url
+    await voucher.update({ image: imgUrl })
+    
     // Прив'язати ваучер до вказаних користувачів
     for (const userId of dto.userIds) {
       await this.uservouchersModel.create({

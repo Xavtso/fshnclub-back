@@ -4,13 +4,20 @@ import { Events } from './events.model';
 import { createEventDto } from './dto/createEvent.dto';
 import { Op } from 'sequelize';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class EventsService {
-  constructor(@InjectModel(Events) private eventsModel: typeof Events) {}
+  constructor(
+    @InjectModel(Events) private eventsModel: typeof Events,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
-  async createEvent(dto: createEventDto) {
-    await this.eventsModel.create(dto);
+  async createEvent(dto: createEventDto, file: Express.Multer.File) {
+    const event = await this.eventsModel.create(dto);
+    const imgFile = await this.cloudinaryService.uploadFile(file);
+    const imgUrl = imgFile.url;
+    await event.update({ image: imgUrl });
     return 'Event Created Successfull';
   }
 
@@ -29,7 +36,7 @@ export class EventsService {
       },
     });
 
-    if(expiredEvents && expiredEvents.length > 0){ 
+    if (expiredEvents && expiredEvents.length > 0) {
       for (const event of expiredEvents) {
         await this.eventsModel.destroy({ where: { id: event.id } });
       }

@@ -4,12 +4,14 @@ import { EventsController } from './events.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Events } from './events.model';
 import { AuthModule } from 'src/auth/auth.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   providers: [EventsService],
   controllers: [EventsController],
   imports: [
     AuthModule,
+    CloudinaryModule,
     SequelizeModule.forFeature([Events])
   ]
 })
