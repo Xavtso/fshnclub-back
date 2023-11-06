@@ -29,7 +29,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: () => ({
+      useFactory: () => ({ 
         dialect: 'mysql',
 
         host: process.env.HOST,

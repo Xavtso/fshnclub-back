@@ -35,7 +35,7 @@ export class UsersService {
     Best regards! You FSHN Club
             `,
       from: '+12515807858',
-      to: '+380934627774',
+      to: user.phoneNumber,
     });
   }
   async sendToOrder(userDto: createUserDto) {
